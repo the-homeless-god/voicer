@@ -29,8 +29,10 @@ def test_split_sentences_single() -> None:
 
 
 def test_split_sentences_two() -> None:
-    """Two sentences split by period and space."""
-    assert split_sentences("Первое. Второе.") == ["Первое.", "Второе."]
+    """Two sentences split by period and space when min_length=0 (no merging)."""
+    assert split_sentences("Первое. Второе.", min_length=0) == ["Первое.", "Второе."]
+    # With default min_length=15, short fragments merge into one
+    assert split_sentences("Первое. Второе.") == ["Первое. Второе."]
 
 
 def test_split_sentences_short_merged() -> None:
@@ -43,9 +45,9 @@ def test_split_sentences_short_merged() -> None:
 
 
 def test_split_sentences_min_length() -> None:
-    """min_length controls merging of short fragments."""
+    """min_length controls merging: short fragments merge with the next."""
     text = "Короткое. Ещё. Третье предложение подлиннее."
-    # With default min_length=15, "Короткое." (10) and "Ещё." (5) might merge with next
     result = split_sentences(text, min_length=15)
-    assert len(result) <= 3
-    assert "Третье предложение подлиннее." in result
+    # All three parts merged into one (each was < 15 chars before the next)
+    assert len(result) == 1
+    assert "Третье предложение подлиннее." in result[0]
