@@ -33,12 +33,17 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Install Poetry
+      - name: Install Poetry (macOS, Linux)
+        if: runner.os != 'Windows'
         uses: snok/install-poetry@v1
         with:
           version: 2.2.1
           virtualenvs-create: true
           virtualenvs-in-project: true
+
+      - name: Install Poetry (Windows)
+        if: runner.os == 'Windows'
+        run: pip install poetry
 
       - name: Install dependencies
         run: poetry install --no-interaction --with dev
