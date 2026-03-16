@@ -2,8 +2,18 @@
 
 Перевод текста (Ollama + translategemma) и клонирование голоса на основе [Qwen3-TTS](https://github.com/QwenLM/Qwen3-TTS). Десктопное приложение (CustomTkinter) и CLI: можно переводить сырой транскрипт в три шага и озвучивать результат одним голосом по референсу.
 
-**Автор:** Marat Zimnurov (zimtir@mail.ru)  
+**Автор:** Marat Zimnurov (<zimtir@mail.ru>)  
 **Лицензия:** [LICENSE](LICENSE) (EN), [LICENSE-RU.md](LICENSE-RU.md) (RU). При коммерческом использовании обязательна атрибуция; при заработке на продукте приветствуется доля автору (в т.ч. через [digitable.ru](https://digitable.ru)). ПО «как есть», без гарантий.
+
+![demo](./examples/app-1.png)
+
+![demo](./examples/app-2.png)
+
+![demo](./examples/app-3.png)
+
+- [voice_demo 1](./examples/output-translated-clone.wav)
+- [voice_demo 2](./examples/001.wav)
+- [voice_demo 3](./examples/002.wav)
 
 ---
 
@@ -128,10 +138,12 @@ poetry run python src/python/env_check.py
 **MLflow** — логирование запусков перевода и клонирования (параметры, метрики, артефакты):
 
 1. Запустите сервер MLflow в одном терминале (порт 5001, т.к. на macOS 5000 часто занят AirPlay):
+
    ```bash
    make mlflow
    # или: poetry run python -m mlflow server --port 5001
    ```
+
 2. В другом терминале задайте переменную окружения и выполните команду:
    - для перевода: `MLFLOW_TRACKING_URI=http://localhost:5001 make translate`;
    - для клонирования по чанкам: `MLFLOW_TRACKING_URI=http://localhost:5001 make clone-chunks`  
