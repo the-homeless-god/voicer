@@ -21,13 +21,13 @@ def main() -> None:
     try:
         import PyInstaller
     except ImportError:
-        print("Установите PyInstaller: poetry add --group dev pyinstaller")
+        print("Install PyInstaller: poetry add --group dev pyinstaller")
         sys.exit(1)
 
     os.chdir(PYTHON_DIR)
     entry = SRC / "voicer_app.py"
     if not entry.exists():
-        print(f"Не найден {entry}")
+        print(f"Not found: {entry}")
         sys.exit(1)
 
     # Данные: промпты и словарь ударений
@@ -59,9 +59,9 @@ def main() -> None:
         "--collect-all", "customtkinter",
         str(entry),
     ]
-    print("Запуск:", " ".join(cmd))
+    print("Running:", " ".join(cmd))
     subprocess.run(cmd, cwd=PYTHON_DIR)
-    print("Готово. Результат: dist/Voicer/ (запуск: dist/Voicer/Voicer)")
+    print("Done. Output: dist/Voicer/ (run: dist/Voicer/Voicer)")
 
 
 if __name__ == "__main__":
