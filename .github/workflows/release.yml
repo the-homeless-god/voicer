@@ -1,0 +1,94 @@
+# Сборка Voicer под macOS, Windows и Linux при публикации релиза.
+# Репозиторий: корень = папка python (Qwen3-TTS в корне как подмодуль или клон).
+
+name: Release build
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: macos-latest
+            name: macos
+          - os: windows-latest
+            name: windows
+          - os: ubuntu-latest
+            name: linux
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python 3.12
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install Poetry
+        uses: snok/install-poetry@v1
+        with:
+          version: 2.2.1
+          virtualenvs-create: true
+          virtualenvs-in-project: true
+
+      - name: Install dependencies
+        run: poetry install --no-interaction --with dev
+
+      - name: Build application
+        run: poetry run python build_app.py
+
+      - name: Prepare archive (macOS)
+        if: matrix.os == 'macos-latest'
+        run: |
+          cd dist && zip -r ../Voicer-macos.zip Voicer.app && cd ..
+
+      - name: Prepare archive (Windows)
+        if: matrix.os == 'windows-latest'
+        run: |
+          Compress-Archive -Path dist\Voicer -DestinationPath Voicer-windows.zip
+
+      - name: Prepare archive (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          cd dist && zip -r ../Voicer-linux.zip Voicer && cd ..
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Voicer-${{ matrix.name }}
+          path: Voicer-${{ matrix.name }}.zip
+
+  upload-release:
+    needs: build
+    if: github.event_name == 'release'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: List artifacts
+        run: find artifacts -type f
+
+      - name: Upload to Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            artifacts/Voicer-macos/Voicer-macos.zip
+            artifacts/Voicer-windows/Voicer-windows.zip
+            artifacts/Voicer-linux/Voicer-linux.zip
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

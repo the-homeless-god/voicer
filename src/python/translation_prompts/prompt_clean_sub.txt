@@ -1,0 +1,15 @@
+You are a text editor working with YouTube transcripts.
+
+Clean the following transcript while preserving the original meaning.
+
+Rules:
+- Merge broken sentences caused by subtitle line breaks
+- Remove duplicated words or fragments
+- Fix punctuation
+- Keep the original wording as much as possible
+- Do not summarize or shorten the text
+- Do not add commentary
+
+Output only the cleaned English transcript.
+
+Transcript:

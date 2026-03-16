@@ -1,0 +1,33 @@
+Voicer — Translation and Voice Cloning (Ollama + Qwen3-TTS)
+Copyright (c) 2026 Marat Zimnurov (zimtir@mail.ru). All rights reserved.
+
+Redistribution and use in source and binary forms, with or without modification,
+are permitted for non-commercial and commercial use, subject to the following
+conditions:
+
+1. ATTRIBUTION (commercial use)
+   If you use this software commercially (including as part of a product or
+   service for which you charge), you must clearly credit the author:
+   "Voicer by Marat Zimnurov" or "Based on Voicer (Marat Zimnurov)" in the
+   product, its documentation, or the about/credits section. This does not
+   imply endorsement; it is a mandatory attribution.
+
+2. REVENUE SHARE (if you earn money from this software)
+   If you earn revenue from this software (e.g. sell an app or service based
+   on it), you are encouraged to share a portion with the author. A simple way
+   is to purchase the official application or a support option at
+   https://digitable.ru — this counts as revenue share and supports further
+   development. This clause is honour-based; there is no automatic enforcement.
+
+3. DISCLAIMER — "AS IS"
+   THIS SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+   OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+   FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+   THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+   LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+   FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+   DEALINGS IN THE SOFTWARE. You use this software at your own risk; the author
+   is not responsible for any damage, data loss, or failure arising from its use.
+
+4. Third-party components (e.g. Qwen3-TTS, Ollama, PyTorch) have their own
+   licenses; comply with them separately.
