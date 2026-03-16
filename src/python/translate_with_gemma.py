@@ -39,6 +39,7 @@ def setup_mlflow(tracking_uri: str | None, experiment_name: str = "voicer") -> N
         return
     try:
         import mlflow
+
         mlflow.set_tracking_uri(tracking_uri)
         mlflow.set_experiment(experiment_name)
         mlflow.openai.autolog()
@@ -98,6 +99,7 @@ def run_translate(
     log_callback(text) вызывается для вывода в GUI/логи.
     prompts: опционально {"clean", "translate", "final"} — тексты промптов; если None — загрузка из translation_prompts/.
     """
+
     def log(msg: str) -> None:
         if log_callback:
             log_callback(msg)
@@ -108,10 +110,14 @@ def run_translate(
     client = get_ollama_client(timeout=timeout)
     if prompts:
         prompt_clean = (prompts.get("clean") or prompts.get("prompt_clean_sub") or "").strip()
-        prompt_translate = (prompts.get("translate") or prompts.get("prompt_translate") or "").strip()
+        prompt_translate = (
+            prompts.get("translate") or prompts.get("prompt_translate") or ""
+        ).strip()
         prompt_final = (prompts.get("final") or prompts.get("prompt_final") or "").strip()
         if not prompt_clean or not prompt_translate or not prompt_final:
-            raise ValueError("prompts must contain 'clean', 'translate', 'final' (or prompt_clean_sub, prompt_translate, prompt_final)")
+            raise ValueError(
+                "prompts must contain 'clean', 'translate', 'final' (or prompt_clean_sub, prompt_translate, prompt_final)"
+            )
     else:
         prompt_clean = load_prompt("prompt_clean_sub.txt")
         prompt_translate = load_prompt("prompt_translate.txt")
@@ -152,7 +158,8 @@ def main() -> None:
         help="Файл с сырым английским транскриптом",
     )
     parser.add_argument(
-        "-o", "--output",
+        "-o",
+        "--output",
         type=Path,
         default=None,
         help="Файл для итогового русского текста (по умолчанию — stdout)",

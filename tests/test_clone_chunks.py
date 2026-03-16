@@ -1,4 +1,5 @@
 """Unit tests for clone_chunks: split_sentences."""
+
 from __future__ import annotations
 
 import pytest

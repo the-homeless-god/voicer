@@ -1,4 +1,5 @@
 """Unit tests for stress_utils: load_stress_overrides, apply_stress_overrides."""
+
 from __future__ import annotations
 
 import tempfile
@@ -62,4 +63,6 @@ def test_apply_stress_overrides_whole_words() -> None:
 
 def test_apply_stress_overrides_empty_pairs_returns_unchanged() -> None:
     """When no overrides file or empty, text is returned unchanged."""
-    assert apply_stress_overrides("любой текст", overrides_path=Path("/nonexistent")) == "любой текст"
+    assert (
+        apply_stress_overrides("любой текст", overrides_path=Path("/nonexistent")) == "любой текст"
+    )

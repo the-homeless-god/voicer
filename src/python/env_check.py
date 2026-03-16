@@ -12,7 +12,6 @@ import urllib.error
 import json
 
 
-
 REQUIRED_PYTHON = (3, 12)  # minimum / минимум 3.12
 OLLAMA_URL = "http://localhost:11434"
 TRANSLATE_MODEL = "translategemma:27b"
@@ -44,7 +43,10 @@ def check_ollama() -> tuple[bool, str]:
     if not names:
         return False, "Ollama доступна, но моделей нет. Выполните: ollama pull translategemma:27b"
     if not any(TRANSLATE_MODEL in n or n == TRANSLATE_MODEL for n in names):
-        return False, f"Модель перевода «{TRANSLATE_MODEL}» не найдена. Есть: {', '.join(names[:5])}... Выполните: ollama pull {TRANSLATE_MODEL}"
+        return (
+            False,
+            f"Модель перевода «{TRANSLATE_MODEL}» не найдена. Есть: {', '.join(names[:5])}... Выполните: ollama pull {TRANSLATE_MODEL}",
+        )
     return True, f"Ollama: модель «{TRANSLATE_MODEL}» доступна"
 
 

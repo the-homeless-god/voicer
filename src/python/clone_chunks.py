@@ -29,7 +29,10 @@ import numpy as np
 import torch
 import soundfile as sf
 from qwen_tts import Qwen3TTSModel
-SCRIPT_DIR = Path(sys._MEIPASS) if getattr(sys, "frozen", False) else Path(__file__).resolve().parent
+
+SCRIPT_DIR = (
+    Path(sys._MEIPASS) if getattr(sys, "frozen", False) else Path(__file__).resolve().parent
+)
 if str(SCRIPT_DIR) not in sys.path:
     sys.path.insert(0, str(SCRIPT_DIR))
 from stress_utils import apply_stress_overrides
@@ -42,14 +45,20 @@ def setup_mlflow_run(tracking_uri: str | None, experiment_name: str, params: dic
         return False
     try:
         import mlflow
+
         mlflow.set_tracking_uri(tracking_uri)
         mlflow.set_experiment(experiment_name)
         run_name = f"clone_chunks_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
         mlflow.start_run(run_name=run_name)
         for k, v in params.items():
             mlflow.log_param(k, str(v) if not isinstance(v, (int, float, bool)) else v)
-        mlflow.log_metric("status", 0, step=0)  # so run is visible in UI immediately / чтобы run сразу был виден в UI
-        print(f"MLflow: run started, experiment={experiment_name!r}, run={run_name!r}", file=sys.stderr)
+        mlflow.log_metric(
+            "status", 0, step=0
+        )  # so run is visible in UI immediately / чтобы run сразу был виден в UI
+        print(
+            f"MLflow: run started, experiment={experiment_name!r}, run={run_name!r}",
+            file=sys.stderr,
+        )
         return True
     except Exception as e:
         print(f"MLflow setup skipped: {e}", file=sys.stderr)
@@ -60,6 +69,7 @@ def finish_mlflow_run(output_dir: Path, num_chunks: int, num_sentences: int = 0)
     """Log metrics and artifacts, end run. Логируем метрики и артефакты, завершаем run."""
     try:
         import mlflow
+
         mlflow.log_metric("num_chunks", num_chunks)
         if num_sentences:
             mlflow.log_metric("num_sentences", num_sentences)
@@ -73,7 +83,8 @@ def finish_mlflow_run(output_dir: Path, num_chunks: int, num_sentences: int = 0)
 
 def split_sentences(text: str, min_length: int = 15) -> list[str]:
     """Split text into sentences. Short fragments (abbreviations etc.) are merged with the next.
-    Разбить текст на предложения. Короткие фрагменты (аббревиатуры т.д., и т.п.) склеиваются со следующим."""
+    Разбить текст на предложения. Короткие фрагменты (аббревиатуры т.д., и т.п.) склеиваются со следующим.
+    """
     text = text.strip()
     if not text:
         return []
@@ -105,7 +116,8 @@ def main() -> None:
         help="Файл с текстом для озвучки (переведённый)",
     )
     parser.add_argument(
-        "-o", "--output-dir",
+        "-o",
+        "--output-dir",
         type=Path,
         default=Path("chunks"),
         help="Папка для wav-файлов (default: chunks)",
@@ -185,9 +197,14 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    tracking_uri = (args.tracking_uri or os.environ.get("MLFLOW_TRACKING_URI") or "").strip() or None
+    tracking_uri = (
+        args.tracking_uri or os.environ.get("MLFLOW_TRACKING_URI") or ""
+    ).strip() or None
     if not tracking_uri:
-        print("MLflow: MLFLOW_TRACKING_URI не задан — логирование отключено. Задайте для записей: MLFLOW_TRACKING_URI=http://localhost:5001", file=sys.stderr)
+        print(
+            "MLflow: MLFLOW_TRACKING_URI не задан — логирование отключено. Задайте для записей: MLFLOW_TRACKING_URI=http://localhost:5001",
+            file=sys.stderr,
+        )
     mlflow_run_active = setup_mlflow_run(
         tracking_uri,
         args.experiment,
@@ -225,17 +242,26 @@ def main() -> None:
         sys.exit(1)
 
     if args.offset >= len(sentences):
-        print(f"Offset {args.offset} >= sentences {len(sentences)}. Nothing to do.", file=sys.stderr)
+        print(
+            f"Offset {args.offset} >= sentences {len(sentences)}. Nothing to do.", file=sys.stderr
+        )
         if mlflow_run_active:
             finish_mlflow_run(args.output_dir, 0, len(sentences))
         sys.exit(0)
 
-    sentences = sentences[args.offset:]
-    max_batches = args.max_batches if args.max_batches > 0 else (len(sentences) + args.batch_size - 1) // args.batch_size
+    sentences = sentences[args.offset :]
+    max_batches = (
+        args.max_batches
+        if args.max_batches > 0
+        else (len(sentences) + args.batch_size - 1) // args.batch_size
+    )
     total_to_process = min(len(sentences), max_batches * args.batch_size)
     sentences = sentences[:total_to_process]
 
-    print(f"Loaded {len(sentences)} sentences (offset={args.offset}). Batch size: {args.batch_size}. Output: {args.output_dir}", file=sys.stderr)
+    print(
+        f"Loaded {len(sentences)} sentences (offset={args.offset}). Batch size: {args.batch_size}. Output: {args.output_dir}",
+        file=sys.stderr,
+    )
 
     args.output_dir.mkdir(parents=True, exist_ok=True)
     ref_text = args.ref_text.read_text(encoding="utf-8").strip()
@@ -260,12 +286,18 @@ def main() -> None:
     for start in range(0, len(sentences), args.batch_size):
         batch = sentences[start : start + args.batch_size]
         batch_num = start // args.batch_size + 1
-        print(f"Batch {batch_num}: {len(batch)} sentences (global {global_index + 1}–{global_index + len(batch)})...", file=sys.stderr)
+        print(
+            f"Batch {batch_num}: {len(batch)} sentences (global {global_index + 1}–{global_index + len(batch)})...",
+            file=sys.stderr,
+        )
         try:
             wavs, sr = model.generate_voice_clone(text=batch, **gen_kwargs)
         except RuntimeError as e:
             if "inf" in str(e) or "nan" in str(e) or "probability" in str(e).lower():
-                print(f"  Batch failed (nan/inf), retrying one by one with do_sample=False: {e}", file=sys.stderr)
+                print(
+                    f"  Batch failed (nan/inf), retrying one by one with do_sample=False: {e}",
+                    file=sys.stderr,
+                )
                 wavs = []
                 sr = 24000
                 for i, one_text in enumerate(batch):
@@ -273,7 +305,10 @@ def main() -> None:
                         w, sr = model.generate_voice_clone(text=[one_text], **gen_kwargs)
                         wavs.append(w[0])
                     except RuntimeError as e2:
-                        print(f"  Skip sentence {global_index + i + 1} (failed): {e2}", file=sys.stderr)
+                        print(
+                            f"  Skip sentence {global_index + i + 1} (failed): {e2}",
+                            file=sys.stderr,
+                        )
                         wavs.append(np.zeros(16000, dtype=np.float32))
                 if not wavs:
                     raise
@@ -289,7 +324,10 @@ def main() -> None:
     if mlflow_run_active:
         finish_mlflow_run(args.output_dir, num_done, len(sentences))
 
-    print(f"Done. {num_done} chunks written (global index up to {global_index}) in {args.output_dir}", file=sys.stderr)
+    print(
+        f"Done. {num_done} chunks written (global index up to {global_index}) in {args.output_dir}",
+        file=sys.stderr,
+    )
 
 
 if __name__ == "__main__":

@@ -19,6 +19,7 @@ from pathlib import Path
 
 import customtkinter as ctk
 
+
 def _get_script_dir() -> Path:
     """Scripts directory; when built as .app (PyInstaller) use _MEIPASS. Каталог скриптов: при сборке в .app — из _MEIPASS."""
     if getattr(sys, "frozen", False):
@@ -45,14 +46,39 @@ SETTINGS_FILE = SCRIPT_DIR / "voicer_settings.json"
 
 # Высота полей по режиму (компактно / нормально / большой)
 FIELD_HEIGHTS = {
-    "compact": {"input": 90, "step1": 50, "step2": 50, "step3": 55, "prompt": 50, "stress": 45, "log": 140},
-    "normal": {"input": 130, "step1": 70, "step2": 70, "step3": 85, "prompt": 100, "stress": 65, "log": 200},
-    "large": {"input": 180, "step1": 100, "step2": 100, "step3": 120, "prompt": 150, "stress": 90, "log": 280},
+    "compact": {
+        "input": 90,
+        "step1": 50,
+        "step2": 50,
+        "step3": 55,
+        "prompt": 50,
+        "stress": 45,
+        "log": 140,
+    },
+    "normal": {
+        "input": 130,
+        "step1": 70,
+        "step2": 70,
+        "step3": 85,
+        "prompt": 100,
+        "stress": 65,
+        "log": 200,
+    },
+    "large": {
+        "input": 180,
+        "step1": 100,
+        "step2": 100,
+        "step3": 120,
+        "prompt": 150,
+        "stress": 90,
+        "log": 280,
+    },
 }
 
 
 class LogQueue:
     """Queue for log lines from background threads to the GUI. Очередь логов из фоновых потоков для вывода в GUI."""
+
     def __init__(self, text_widget: ctk.CTkTextbox):
         self._queue: queue.Queue[str] = queue.Queue()
         self._widget = text_widget
@@ -116,16 +142,28 @@ class VoicerApp(ctk.CTk):
         # --- Настройки (сверху) ---
         f_top = ctk.CTkFrame(self.scroll, fg_color="transparent")
         f_top.pack(fill="x", padx=5, pady=(0, 10))
-        ctk.CTkLabel(f_top, text="Настройки:", font=ctk.CTkFont(weight="bold")).pack(side="left", padx=(0, 10))
-        ctk.CTkButton(f_top, text="Сохранить настройки", width=140, command=self._save_settings).pack(side="left", padx=2)
-        ctk.CTkButton(f_top, text="Загрузить настройки", width=140, command=self._load_settings).pack(side="left", padx=2)
-        ctk.CTkButton(f_top, text="Сбросить всё", width=100, command=self._reset_all, fg_color="gray").pack(side="left", padx=(15, 2))
-        ctk.CTkButton(f_top, text="Проверить окружение", width=160, command=self._check_environment).pack(side="left", padx=2)
+        ctk.CTkLabel(f_top, text="Настройки:", font=ctk.CTkFont(weight="bold")).pack(
+            side="left", padx=(0, 10)
+        )
+        ctk.CTkButton(
+            f_top, text="Сохранить настройки", width=140, command=self._save_settings
+        ).pack(side="left", padx=2)
+        ctk.CTkButton(
+            f_top, text="Загрузить настройки", width=140, command=self._load_settings
+        ).pack(side="left", padx=2)
+        ctk.CTkButton(
+            f_top, text="Сбросить всё", width=100, command=self._reset_all, fg_color="gray"
+        ).pack(side="left", padx=(15, 2))
+        ctk.CTkButton(
+            f_top, text="Проверить окружение", width=160, command=self._check_environment
+        ).pack(side="left", padx=2)
         ctk.CTkLabel(f_top, text="  Размер полей:").pack(side="left", padx=(15, 5))
         self.field_scale_var = ctk.StringVar(value="Нормально")
         scale_combo = ctk.CTkComboBox(
-            f_top, values=["Компактно", "Нормально", "Большой"],
-            variable=self.field_scale_var, width=110,
+            f_top,
+            values=["Компактно", "Нормально", "Большой"],
+            variable=self.field_scale_var,
+            width=110,
             command=self._on_field_scale_change,
         )
         scale_combo.pack(side="left", padx=2)
@@ -134,13 +172,29 @@ class VoicerApp(ctk.CTk):
         # --- Режим: с переводом или только озвучка ---
         f_mode = ctk.CTkFrame(self.scroll, fg_color="transparent")
         f_mode.pack(fill="x", padx=5, pady=(5, 2))
-        ctk.CTkLabel(f_mode, text="Режим:", font=ctk.CTkFont(weight="bold")).pack(side="left", padx=(0, 10))
+        ctk.CTkLabel(f_mode, text="Режим:", font=ctk.CTkFont(weight="bold")).pack(
+            side="left", padx=(0, 10)
+        )
         self.mode_var = ctk.StringVar(value="with_translate")
-        ctk.CTkRadioButton(f_mode, text="С переводом (EN→RU и т.д.)", variable=self.mode_var, value="with_translate", command=self._on_mode_change).pack(side="left", padx=(0, 15))
-        ctk.CTkRadioButton(f_mode, text="Только озвучка (текст уже готов)", variable=self.mode_var, value="voice_only", command=self._on_mode_change).pack(side="left", padx=0)
+        ctk.CTkRadioButton(
+            f_mode,
+            text="С переводом (EN→RU и т.д.)",
+            variable=self.mode_var,
+            value="with_translate",
+            command=self._on_mode_change,
+        ).pack(side="left", padx=(0, 15))
+        ctk.CTkRadioButton(
+            f_mode,
+            text="Только озвучка (текст уже готов)",
+            variable=self.mode_var,
+            value="voice_only",
+            command=self._on_mode_change,
+        ).pack(side="left", padx=0)
 
         # --- Ввод текста ---
-        self.label_input = ctk.CTkLabel(self.scroll, text="Исходный текст (сырой транскрипт):", font=ctk.CTkFont(weight="bold"))
+        self.label_input = ctk.CTkLabel(
+            self.scroll, text="Исходный текст (сырой транскрипт):", font=ctk.CTkFont(weight="bold")
+        )
         self.label_input.pack(anchor="w", padx=5, pady=(10, 2))
         h = FIELD_HEIGHTS["normal"]
         self.text_input = ctk.CTkTextbox(self.scroll, height=h["input"], font=ctk.CTkFont(size=13))
@@ -150,14 +204,22 @@ class VoicerApp(ctk.CTk):
         self.lang_label = ctk.CTkLabel(f_inp, text="Язык:")
         self.lang_label.pack(side="left", padx=(0, 5))
         self.lang_var = ctk.StringVar(value="en")
-        self.lang_combo = ctk.CTkComboBox(f_inp, values=["en", "de", "fr"], variable=self.lang_var, width=80)
+        self.lang_combo = ctk.CTkComboBox(
+            f_inp, values=["en", "de", "fr"], variable=self.lang_var, width=80
+        )
         self.lang_combo.pack(side="left", padx=5)
         ctk.CTkLabel(f_inp, text="Модель перевода:").pack(side="left", padx=(15, 5))
         self.translate_model_var = ctk.StringVar(value="translategemma:27b")
-        ctk.CTkEntry(f_inp, textvariable=self.translate_model_var, width=180).pack(side="left", padx=5)
-        self.btn_translate = ctk.CTkButton(f_inp, text="Выполнить перевод", command=self._on_translate, width=180)
+        ctk.CTkEntry(f_inp, textvariable=self.translate_model_var, width=180).pack(
+            side="left", padx=5
+        )
+        self.btn_translate = ctk.CTkButton(
+            f_inp, text="Выполнить перевод", command=self._on_translate, width=180
+        )
         self.btn_translate.pack(side="left", padx=5)
-        self.btn_use_voice = ctk.CTkButton(f_inp, text="Использовать для озвучки", command=self._on_use_for_voice, width=180)
+        self.btn_use_voice = ctk.CTkButton(
+            f_inp, text="Использовать для озвучки", command=self._on_use_for_voice, width=180
+        )
         # btn_use_voice показывается только в режиме «Только озвучка» (_on_mode_change)
         self.translate_status = ctk.CTkLabel(f_inp, text="", text_color="gray")
         self.translate_status.pack(side="left", padx=10)
@@ -166,25 +228,39 @@ class VoicerApp(ctk.CTk):
         # --- Результаты перевода ---
         self.frame_steps = ctk.CTkFrame(self.scroll, fg_color="transparent")
         self.frame_steps.pack(fill="x", padx=5, pady=(15, 2))
-        ctk.CTkLabel(self.frame_steps, text="Результаты перевода:", font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=5, pady=(0, 2))
-        self.step1_text = ctk.CTkTextbox(self.frame_steps, height=h["step1"], font=ctk.CTkFont(size=11))
+        ctk.CTkLabel(
+            self.frame_steps, text="Результаты перевода:", font=ctk.CTkFont(weight="bold")
+        ).pack(anchor="w", padx=5, pady=(0, 2))
+        self.step1_text = ctk.CTkTextbox(
+            self.frame_steps, height=h["step1"], font=ctk.CTkFont(size=11)
+        )
         self.step1_text.pack(fill="x", padx=5, pady=(0, 2))
-        self.step2_text = ctk.CTkTextbox(self.frame_steps, height=h["step2"], font=ctk.CTkFont(size=11))
+        self.step2_text = ctk.CTkTextbox(
+            self.frame_steps, height=h["step2"], font=ctk.CTkFont(size=11)
+        )
         self.step2_text.pack(fill="x", padx=5, pady=(0, 2))
-        self.step3_text = ctk.CTkTextbox(self.frame_steps, height=h["step3"], font=ctk.CTkFont(size=11))
+        self.step3_text = ctk.CTkTextbox(
+            self.frame_steps, height=h["step3"], font=ctk.CTkFont(size=11)
+        )
         self.step3_text.pack(fill="x", padx=5, pady=(0, 8))
         for w in (self.step1_text, self.step2_text, self.step3_text):
             self._make_readonly_copyable(w)
 
         # --- Клонирование ---
-        ctk.CTkLabel(self.scroll, text="Клонирование голоса:", font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=5, pady=(10, 2))
+        ctk.CTkLabel(
+            self.scroll, text="Клонирование голоса:", font=ctk.CTkFont(weight="bold")
+        ).pack(anchor="w", padx=5, pady=(10, 2))
         f1 = ctk.CTkFrame(self.scroll, fg_color="transparent")
         f1.pack(fill="x", padx=5, pady=2)
         ctk.CTkLabel(f1, text="Выходная папка:").pack(side="left", padx=(0, 5))
         self.out_dir_var = ctk.StringVar(value=str(self.output_dir))
         ctk.CTkEntry(f1, textvariable=self.out_dir_var, width=320).pack(side="left", padx=5)
-        ctk.CTkButton(f1, text="Обзор...", width=70, command=self._browse_output).pack(side="left", padx=(0, 5))
-        ctk.CTkButton(f1, text="Открыть папку", width=100, command=self._open_output_folder).pack(side="left")
+        ctk.CTkButton(f1, text="Обзор...", width=70, command=self._browse_output).pack(
+            side="left", padx=(0, 5)
+        )
+        ctk.CTkButton(f1, text="Открыть папку", width=100, command=self._open_output_folder).pack(
+            side="left"
+        )
 
         f2 = ctk.CTkFrame(self.scroll, fg_color="transparent")
         f2.pack(fill="x", padx=5, pady=2)
@@ -202,10 +278,14 @@ class VoicerApp(ctk.CTk):
         f2b.pack(fill="x", padx=5, pady=2)
         ctk.CTkLabel(f2b, text="Устройство:").pack(side="left", padx=(0, 5))
         self.device_var = ctk.StringVar(value="mps:0")
-        ctk.CTkComboBox(f2b, values=["mps:0", "cuda:0", "cpu"], variable=self.device_var, width=90).pack(side="left", padx=5)
+        ctk.CTkComboBox(
+            f2b, values=["mps:0", "cuda:0", "cpu"], variable=self.device_var, width=90
+        ).pack(side="left", padx=5)
         ctk.CTkLabel(f2b, text="Attention:").pack(side="left", padx=(10, 5))
         self.attn_var = ctk.StringVar(value="sdpa")
-        ctk.CTkComboBox(f2b, values=["sdpa", "eager"], variable=self.attn_var, width=80).pack(side="left", padx=5)
+        ctk.CTkComboBox(f2b, values=["sdpa", "eager"], variable=self.attn_var, width=80).pack(
+            side="left", padx=5
+        )
         ctk.CTkLabel(f2b, text="Язык референса:").pack(side="left", padx=(10, 5))
         self.ref_language_var = ctk.StringVar(value="Russian")
         ctk.CTkEntry(f2b, textvariable=self.ref_language_var, width=120).pack(side="left", padx=5)
@@ -216,48 +296,74 @@ class VoicerApp(ctk.CTk):
         self.ref_audio_var = ctk.StringVar(value=str(DEFAULT_REF_AUDIO))
         self.entry_ref_audio = ctk.CTkEntry(f_ref_audio, textvariable=self.ref_audio_var)
         self.entry_ref_audio.pack(fill="x", padx=(0, 5), pady=(2, 5))
-        ctk.CTkButton(f_ref_audio, text="Файл...", width=80, command=self._browse_ref_audio).pack(anchor="w", padx=0, pady=(0, 5))
+        ctk.CTkButton(f_ref_audio, text="Файл...", width=80, command=self._browse_ref_audio).pack(
+            anchor="w", padx=0, pady=(0, 5)
+        )
         f_ref_text = ctk.CTkFrame(self.scroll, fg_color="transparent")
         f_ref_text.pack(fill="x", padx=5, pady=2)
         ctk.CTkLabel(f_ref_text, text="Текст референса:").pack(anchor="w", padx=(0, 5))
         self.ref_text_var = ctk.StringVar(value=str(DEFAULT_REF_TEXT))
         self.entry_ref_text = ctk.CTkEntry(f_ref_text, textvariable=self.ref_text_var)
         self.entry_ref_text.pack(fill="x", padx=(0, 5), pady=(2, 5))
-        ctk.CTkButton(f_ref_text, text="Файл...", width=80, command=self._browse_ref_text).pack(anchor="w", padx=0, pady=(0, 5))
+        ctk.CTkButton(f_ref_text, text="Файл...", width=80, command=self._browse_ref_text).pack(
+            anchor="w", padx=0, pady=(0, 5)
+        )
 
         # Словарь ударений — во вкладке «Словарь ударений»
 
         f_btn = ctk.CTkFrame(self.scroll, fg_color="transparent")
         f_btn.pack(fill="x", padx=5, pady=5)
-        self.btn_clone = ctk.CTkButton(f_btn, text="Клонировать голос", command=self._on_clone, width=200)
+        self.btn_clone = ctk.CTkButton(
+            f_btn, text="Клонировать голос", command=self._on_clone, width=200
+        )
         self.btn_clone.pack(side="left", padx=(0, 10))
         self.clone_status = ctk.CTkLabel(f_btn, text="", text_color="gray")
         self.clone_status.pack(side="left")
 
         # --- Вкладка «Промпты для перевода» ---
         prom_tab = self.tabview.tab("Промпты для перевода")
-        ctk.CTkLabel(prom_tab, text="Шаг 1 — Очистка транскрипта:", font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=5, pady=(10, 2))
-        self.prompt_clean_text = ctk.CTkTextbox(prom_tab, height=h["prompt"], font=ctk.CTkFont(size=11))
+        ctk.CTkLabel(
+            prom_tab, text="Шаг 1 — Очистка транскрипта:", font=ctk.CTkFont(weight="bold")
+        ).pack(anchor="w", padx=5, pady=(10, 2))
+        self.prompt_clean_text = ctk.CTkTextbox(
+            prom_tab, height=h["prompt"], font=ctk.CTkFont(size=11)
+        )
         self.prompt_clean_text.pack(fill="x", padx=5, pady=(0, 8))
-        ctk.CTkLabel(prom_tab, text="Шаг 2 — Перевод EN→RU:", font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=5, pady=(5, 2))
-        self.prompt_translate_text = ctk.CTkTextbox(prom_tab, height=h["prompt"], font=ctk.CTkFont(size=11))
+        ctk.CTkLabel(prom_tab, text="Шаг 2 — Перевод EN→RU:", font=ctk.CTkFont(weight="bold")).pack(
+            anchor="w", padx=5, pady=(5, 2)
+        )
+        self.prompt_translate_text = ctk.CTkTextbox(
+            prom_tab, height=h["prompt"], font=ctk.CTkFont(size=11)
+        )
         self.prompt_translate_text.pack(fill="x", padx=5, pady=(0, 8))
-        ctk.CTkLabel(prom_tab, text="Шаг 3 — Финальная правка под нарацию:", font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=5, pady=(5, 2))
-        self.prompt_final_text = ctk.CTkTextbox(prom_tab, height=h["prompt"], font=ctk.CTkFont(size=11))
+        ctk.CTkLabel(
+            prom_tab, text="Шаг 3 — Финальная правка под нарацию:", font=ctk.CTkFont(weight="bold")
+        ).pack(anchor="w", padx=5, pady=(5, 2))
+        self.prompt_final_text = ctk.CTkTextbox(
+            prom_tab, height=h["prompt"], font=ctk.CTkFont(size=11)
+        )
         self.prompt_final_text.pack(fill="both", expand=True, padx=5, pady=(0, 10))
         self._load_prompts_from_files()
 
         # --- Вкладка «Словарь ударений» ---
         stress_tab = self.tabview.tab("Словарь ударений")
-        ctk.CTkLabel(stress_tab, text="Словарь ударений (одно слово в строке, ударная буква — заглавная, напр. судОку):", font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=5, pady=(10, 2))
+        ctk.CTkLabel(
+            stress_tab,
+            text="Словарь ударений (одно слово в строке, ударная буква — заглавная, напр. судОку):",
+            font=ctk.CTkFont(weight="bold"),
+        ).pack(anchor="w", padx=5, pady=(10, 2))
         self.stress_text = ctk.CTkTextbox(stress_tab, height=h["stress"], font=ctk.CTkFont(size=11))
         self.stress_text.pack(fill="both", expand=True, padx=5, pady=(0, 10))
         if DEFAULT_STRESS_FILE.exists():
             self.stress_text.insert("1.0", DEFAULT_STRESS_FILE.read_text(encoding="utf-8"))
 
         # --- Логи (правая колонка) ---
-        ctk.CTkLabel(log_pane, text="Логи", font=ctk.CTkFont(weight="bold")).pack(anchor="w", padx=0, pady=(0, 4))
-        self.log_text = ctk.CTkTextbox(log_pane, height=h["log"], font=ctk.CTkFont(family="Monaco", size=11))
+        ctk.CTkLabel(log_pane, text="Логи", font=ctk.CTkFont(weight="bold")).pack(
+            anchor="w", padx=0, pady=(0, 4)
+        )
+        self.log_text = ctk.CTkTextbox(
+            log_pane, height=h["log"], font=ctk.CTkFont(family="Monaco", size=11)
+        )
         self.log_text.pack(fill="both", expand=True, padx=0, pady=0)
         self._make_readonly_copyable(self.log_text)
         self.log_queue = LogQueue(self.log_text)
@@ -277,12 +383,16 @@ class VoicerApp(ctk.CTk):
             self.out_dir_var.set(path)
 
     def _browse_ref_audio(self) -> None:
-        path = ctk.filedialog.askopenfilename(title="Референсное аудио", filetypes=[("WAV", "*.wav"), ("Все", "*")])
+        path = ctk.filedialog.askopenfilename(
+            title="Референсное аудио", filetypes=[("WAV", "*.wav"), ("Все", "*")]
+        )
         if path:
             self.ref_audio_var.set(path)
 
     def _browse_ref_text(self) -> None:
-        path = ctk.filedialog.askopenfilename(title="Текст референса", filetypes=[("Текст", "*.txt"), ("Все", "*")])
+        path = ctk.filedialog.askopenfilename(
+            title="Текст референса", filetypes=[("Текст", "*.txt"), ("Все", "*")]
+        )
         if path:
             self.ref_text_var.set(path)
 
@@ -290,7 +400,9 @@ class VoicerApp(ctk.CTk):
         """Show/hide buttons by mode (with translation / voice only). Показать/скрыть кнопки по режиму."""
         is_voice_only = self.mode_var.get() == "voice_only"
         if is_voice_only:
-            self.label_input.configure(text="Текст для озвучки (уже переведённый или на целевом языке):")
+            self.label_input.configure(
+                text="Текст для озвучки (уже переведённый или на целевом языке):"
+            )
             self.btn_translate.pack_forget()
             self.btn_use_voice.pack(side="left", padx=5, before=self.translate_status)
             self.lang_label.pack_forget()
@@ -309,7 +421,9 @@ class VoicerApp(ctk.CTk):
             self._log("Введите текст для озвучки.")
             return
         self.translate_result = {"step1": "", "step2": "", "step3": "", "final": raw}
-        self.translate_status.configure(text="Текст принят. Можно нажимать «Клонировать голос».", text_color="gray")
+        self.translate_status.configure(
+            text="Текст принят. Можно нажимать «Клонировать голос».", text_color="gray"
+        )
         self._log("Текст для озвучки принят. Переходите к клонированию.")
 
     def _on_field_scale_change(self, choice: str) -> None:
@@ -332,6 +446,7 @@ class VoicerApp(ctk.CTk):
 
     def _make_readonly_copyable(self, text_widget: ctk.CTkTextbox) -> None:
         """Только чтение + копирование: контекстное меню «Копировать» и Ctrl+C в буфер."""
+
         def copy_selection() -> None:
             try:
                 tw = getattr(text_widget, "_textbox", None)
@@ -364,10 +479,17 @@ class VoicerApp(ctk.CTk):
             menu = ctk.CTkToplevel(self)
             menu.wm_overrideredirect(True)
             menu.wm_geometry(f"+{event.x_root + 5}+{event.y_root + 5}")
-            btn = ctk.CTkButton(menu, text="Копировать", width=120, command=lambda: (copy_selection(), menu.destroy()))
+            btn = ctk.CTkButton(
+                menu,
+                text="Копировать",
+                width=120,
+                command=lambda: (copy_selection(), menu.destroy()),
+            )
             btn.pack(padx=2, pady=2)
+
             def close_menu(_e):
                 menu.destroy()
+
             menu.bind("<FocusOut>", close_menu)
             menu.after(200, btn.focus_set)
 
@@ -403,6 +525,7 @@ class VoicerApp(ctk.CTk):
         def do_check():
             try:
                 from env_check import run_all_checks, format_checks_for_log
+
                 checks = run_all_checks(tts_model_id=tts_model)
                 lines = format_checks_for_log(checks)
                 for line in lines:
@@ -469,7 +592,9 @@ class VoicerApp(ctk.CTk):
             "stress": self.stress_text.get("1.0", "end"),
         }
         try:
-            SETTINGS_FILE.write_text(json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8")
+            SETTINGS_FILE.write_text(
+                json.dumps(data, ensure_ascii=False, indent=2), encoding="utf-8"
+            )
             self._log("Настройки сохранены.")
         except Exception as e:
             self._log(f"Ошибка сохранения настроек: {e}")
@@ -538,28 +663,50 @@ class VoicerApp(ctk.CTk):
             self._log("Ошибка: введите исходный текст.")
             return
         self.btn_translate.configure(state="disabled")
-        self.translate_status.configure(text="Идёт перевод… (ожидайте, не нажимайте кнопку)", text_color="orange")
+        self.translate_status.configure(
+            text="Идёт перевод… (ожидайте, не нажимайте кнопку)", text_color="orange"
+        )
         self._log("Запуск перевода (Ollama translategemma)...")
 
         prompts = self._get_prompts_dict()
+
         def do_translate():
             def cb(msg: str) -> None:
                 self.after(0, lambda m=msg: self._log(m))
                 # Обновляем статус по шагам, чтобы было видно прогресс
                 if "Step 1" in msg or "Шаг 1" in msg:
-                    self.after(0, lambda: self.translate_status.configure(text="Шаг 1/3 — очистка…", text_color="orange"))
+                    self.after(
+                        0,
+                        lambda: self.translate_status.configure(
+                            text="Шаг 1/3 — очистка…", text_color="orange"
+                        ),
+                    )
                 elif "Step 2" in msg or "Шаг 2" in msg:
-                    self.after(0, lambda: self.translate_status.configure(text="Шаг 2/3 — перевод…", text_color="orange"))
+                    self.after(
+                        0,
+                        lambda: self.translate_status.configure(
+                            text="Шаг 2/3 — перевод…", text_color="orange"
+                        ),
+                    )
                 elif "Step 3" in msg or "Шаг 3" in msg:
-                    self.after(0, lambda: self.translate_status.configure(text="Шаг 3/3 — финальная правка…", text_color="orange"))
+                    self.after(
+                        0,
+                        lambda: self.translate_status.configure(
+                            text="Шаг 3/3 — финальная правка…", text_color="orange"
+                        ),
+                    )
+
             try:
                 from translate_with_gemma import run_translate
+
                 model = self.translate_model_var.get().strip() or "translategemma:27b"
                 result = run_translate(raw, log_callback=cb, prompts=prompts, model=model)
                 self.after(0, lambda: self._apply_translate_result(result))
             except Exception as e:
                 self.after(0, lambda: self._log(f"Ошибка перевода: {e}"))
-                self.after(0, lambda: self.translate_status.configure(text="Ошибка", text_color="red"))
+                self.after(
+                    0, lambda: self.translate_status.configure(text="Ошибка", text_color="red")
+                )
             finally:
                 self.after(0, lambda: self.btn_translate.configure(state="normal"))
 
@@ -567,7 +714,11 @@ class VoicerApp(ctk.CTk):
 
     def _apply_translate_result(self, result: dict[str, str]) -> None:
         self.translate_result = result
-        for name, widget in [("step1", self.step1_text), ("step2", self.step2_text), ("step3", self.step3_text)]:
+        for name, widget in [
+            ("step1", self.step1_text),
+            ("step2", self.step2_text),
+            ("step3", self.step3_text),
+        ]:
             widget.delete("1.0", "end")
             widget.insert("1.0", result.get(name, ""))
         self.translate_status.configure(text="Готово", text_color="gray")
@@ -599,7 +750,9 @@ class VoicerApp(ctk.CTk):
 
         out_dir.mkdir(parents=True, exist_ok=True)
         text_for_file = apply_stress_overrides(final_text, stress_file)
-        tmp_input = tempfile.NamedTemporaryFile(mode="w", suffix=".txt", delete=False, encoding="utf-8")
+        tmp_input = tempfile.NamedTemporaryFile(
+            mode="w", suffix=".txt", delete=False, encoding="utf-8"
+        )
         tmp_input.write(text_for_file)
         tmp_input.close()
         input_path = tmp_input.name
@@ -610,17 +763,31 @@ class VoicerApp(ctk.CTk):
         env = os.environ.copy()
         frozen = getattr(sys, "frozen", False)
         clone_extra = [
-            "--device", device,
-            "--attn-implementation", attn_impl,
-            "--language", ref_language,
+            "--device",
+            device,
+            "--attn-implementation",
+            attn_impl,
+            "--language",
+            ref_language,
         ]
         if frozen:
             python_dir = Path(getattr(sys, "_MEIPASS", os.path.dirname(sys.executable)))
             cmd = [
-                sys.executable, "--run-clone-chunks", input_path, "-o", str(out_dir),
-                "--batch-size", batch_size_s, "--max-new-tokens", max_tokens,
-                "--ref-audio", str(ref_audio), "--ref-text", str(ref_text),
-                "--model", model,
+                sys.executable,
+                "--run-clone-chunks",
+                input_path,
+                "-o",
+                str(out_dir),
+                "--batch-size",
+                batch_size_s,
+                "--max-new-tokens",
+                max_tokens,
+                "--ref-audio",
+                str(ref_audio),
+                "--ref-text",
+                str(ref_text),
+                "--model",
+                model,
                 *clone_extra,
             ]
         else:
@@ -631,10 +798,21 @@ class VoicerApp(ctk.CTk):
             if not clone_script.exists():
                 clone_script = SCRIPT_DIR / "clone_chunks.py"
             cmd = [
-                sys.executable, str(clone_script), input_path, "-o", str(out_dir),
-                "--batch-size", batch_size_s, "--max-new-tokens", max_tokens,
-                "--ref-audio", str(ref_audio), "--ref-text", str(ref_text),
-                "--model", model,
+                sys.executable,
+                str(clone_script),
+                input_path,
+                "-o",
+                str(out_dir),
+                "--batch-size",
+                batch_size_s,
+                "--max-new-tokens",
+                max_tokens,
+                "--ref-audio",
+                str(ref_audio),
+                "--ref-text",
+                str(ref_text),
+                "--model",
+                model,
                 *clone_extra,
             ]
 
@@ -661,10 +839,13 @@ class VoicerApp(ctk.CTk):
                     os.unlink(input_path)
                 except Exception:
                     pass
-                self.after(0, lambda: (
-                    self.btn_clone.configure(state="normal", text="Клонировать голос"),
-                    self.clone_status.configure(text=""),
-                ))
+                self.after(
+                    0,
+                    lambda: (
+                        self.btn_clone.configure(state="normal", text="Клонировать голос"),
+                        self.clone_status.configure(text=""),
+                    ),
+                )
 
         threading.Thread(target=do_clone, daemon=True).start()
 
@@ -687,6 +868,7 @@ if __name__ == "__main__":
         idx = sys.argv.index("--run-clone-chunks")
         sys.argv = ["clone_chunks"] + sys.argv[idx + 1 :]
         import clone_chunks  # noqa: E402
+
         clone_chunks.main()
         sys.exit(0)
     main()

@@ -1,4 +1,5 @@
 """Pytest configuration: add src/python to path so tests can import app modules."""
+
 from __future__ import annotations
 
 import sys

@@ -14,7 +14,10 @@ import re
 from pathlib import Path
 
 import sys
-SCRIPT_DIR = Path(sys._MEIPASS) if getattr(sys, "frozen", False) else Path(__file__).resolve().parent
+
+SCRIPT_DIR = (
+    Path(sys._MEIPASS) if getattr(sys, "frozen", False) else Path(__file__).resolve().parent
+)
 DEFAULT_STRESS_FILE = SCRIPT_DIR / "stress_overrides.txt"
 COMBINING_ACUTE = "\u0301"
 
@@ -27,14 +30,15 @@ def _word_with_capital_to_replacement(word: str) -> tuple[str, str] | None:
     low = word.lower()
     for i, c in enumerate(word):
         if c != low[i]:
-            replacement = low[:i] + low[i] + COMBINING_ACUTE + low[i + 1:]
+            replacement = low[:i] + low[i] + COMBINING_ACUTE + low[i + 1 :]
             return (low, replacement)
     return None
 
 
 def load_stress_overrides(path: Path | None = None) -> list[tuple[str, str]]:
     """Load (word_key, replacement) pairs. Supports «word with uppercase stress» and «word replacement» formats.
-    Загружает пары (слово_ключ, замена). Поддерживает формат «слово с заглавной ударной» и «слово замена»."""
+    Загружает пары (слово_ключ, замена). Поддерживает формат «слово с заглавной ударной» и «слово замена».
+    """
     path = path or DEFAULT_STRESS_FILE
     if not path.exists():
         return []
