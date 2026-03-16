@@ -1,0 +1,17 @@
+You are editing a Russian translation of a programming YouTube video.
+
+Rewrite the text so it sounds more natural and fluid for voice narration.
+
+Rules:
+
+- Do not change the meaning
+- Improve readability and flow
+- Prefer shorter spoken sentences
+- Make it sound like a developer explaining technology in a YouTube video
+- Remove awkward phrasing
+- Keep technical names in English
+- Do not add explanations or commentary
+
+Output only the final Russian narration script.
+
+Text:

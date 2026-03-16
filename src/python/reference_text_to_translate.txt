@@ -1,0 +1,216 @@
+P versus NP. That this is arguably the
+most famous unsolved problem in computer
+science. And actually, if you're cracked
+enough to solve it, the Clay Mathematics
+Institute will literally give you $1
+million. And all you have to do is come
+up with a proof for this philosophical
+question. If you can verify a solution
+quickly, can you also find the solution
+quickly? Or in other words, is
+handcrafting a beautiful meme just as
+easy as admiring its beauty? To me, the
+answer seems obvious. Of course, P does
+not equal NP. Many others believe this,
+but nobody's been able to prove it. I
+arrogantly set out to prove that P
+doesn't equal NP myself and couldn't do
+it. But what's scary, though, is that if
+everybody turns out to be wrong and
+somebody proves that P does actually
+equal NP, then every password,
+encryption key, and crypto wallet
+becomes instantly crackable, while
+simultaneously curing cancer and ending
+world hunger. It would be total chaos.
+In today's video, we'll look at the
+weird mind-bending math behind the
+greatest unsolved problem in computer
+science and try to win a million dollars
+in the process. The P versus NP problem
+was officially defined in 1971 by Steven
+Cook in his famous the complexity of
+theorem proving procedures paper. But we
+can actually go back even further to
+1955 when mathematician John Nash warned
+the National Security Agency that for
+well-defined cryptography, the effort
+needed to break a code doesn't scale
+linear. It explodes exponentially as the
+key gets longer. He was implying that P
+does not equal NP. But what's crazy is
+that there are thousands of papers,
+decades of research, and zero proof
+either way. But to understand why it's
+so hard to prove, we first need to
+understand the math behind it. P stands
+for polomial time, which are problems a
+computer can solve efficiently even as
+the input gets bigger. Think about an
+algorithm that sorts a list of names. As
+the list gets bigger, it takes longer to
+sort, but at a deterministic and
+reasonable pace. When sorting a list of
+names alphabetically, the amount of work
+on the CPU is roughly proportional to n
+or n login. So if the list gets 10 times
+bigger, the computer does about 10 to 20
+times more work. And problems that grow
+at a reasonable pace like this are
+called p. But then things start to get
+weird when we talk about np, which
+stands for non-deterministic polomial
+time. These are problems where you might
+be able to check a solution quickly, but
+finding it, good luck. Some examples are
+the traveling salesman problem, Sudoku
+puzzles, or scheduling your dev team's
+vacation days. If you already know the
+answer, verifying it only takes polomial
+time. But if you need to find the
+solution from scratch, you might be
+waiting until the heat death of the
+universe. For example, imagine I give
+you two prime numbers 7 and 13. Then ask
+you to multiply them together. That's a
+piece of cake that you could likely do
+in your head right now. But now imagine
+this problem reversed. I give you 91 and
+ask you to find two prime numbers to
+produce it. You might need to test out a
+few different possibilities, but you can
+still do it in your head. But now try
+the same exercise on 69420. What you'll
+find is that it's far more difficult
+because you need to explore all kinds of
+different potential options. And that
+simple fact is why prime numbers are the
+foundation for modern public key
+cryptography like RSA encryption.
+Multiplying two primes is easy, but
+factoring back to the original
+components is extremely hard. What's
+funny is that we know it's hard, but
+mathematicians can't actually prove that
+it's hard and can't prove that no faster
+algorithm exists. Another classic
+problem like this that you might see on
+a technical interview is the traveling
+salesman problem. You have n cities and
+you want the shortest route that visits
+each one once. The brute force approach
+is to try every possible path and that
+gives you a lot of possibilities. N
+minus one bang factorial. For just 15
+cities, that gives us like 87 billion
+different possibilities. That'll make
+your CPU explode. But here's the twist.
+If someone hands you the optimal route,
+you can quickly verify it. But by
+checking if it's shorter than the
+alternatives you already know. The
+verification is easy. Discovery is
+brutal. Because of that, algorithms in
+the real world have to be optimized for
+different rules or horistics if you want
+to sound smart, which aren't guaranteed
+to get you the best answer, but they
+should get you pretty close. Basically,
+you have to trade the optimal solution
+for a reasonable compute time. So at
+this point we know that a problem is NP
+if a solution can be verified in
+polomial time. But there's another
+special group of problems called NP
+complete and these are the worst of the
+worst. If you can solve any one of them
+in polomial time you can solve all of
+them in polomial time. The first
+NPcomplete problem was SAT the boolean
+satisfiability problem. Imagine you have
+a giant logical expression that looks
+like this. Is there some assignment of
+true false values that makes the whole
+thing true? Checking the answer is
+trivial, but finding the answer requires
+tons of different combinations. What's
+interesting about this one though is
+that it was the first problem to be
+defined as NP complete by Steven Cook in
+1971. Since then, many other problems
+have joined the club like traveling
+salesman, the Sudoku, circuit design,
+protein folding, and a bunch of other
+problems that are really important to
+humans. What's really weird though is
+that they all simulate each other in
+terms of complexity. And that means if
+somebody finds a polomial solution to
+solving one of them, then all of them
+will be solved instantly.
+Hypothetically, if somebody did that, P
+would equal NP and the world would
+completely change overnight. The things
+that were once impossibly hard are now
+trivial. But despite 50 years of trying,
+nobody has been able to find a fast
+algorithm for any NPcomplete problem. In
+addition, mathematicians have tried to
+end this debate with a variety of
+different proof methods, but every time
+they hit barriers that make it
+impossible. But why is this problem so
+important? And why did I even bother to
+make a video about it? If you really
+take a minute to think about it, the
+implications are kind of mind-blowing.
+If P equals NP, then every puzzle has a
+shortcut and the universe is ultimately
+efficient, like a machine built by an
+intelligent designer who never wastes
+computation. But if P does not equal NP,
+then reality itself contains problems
+that can't be cut short, like the
+universe runs on deep computational
+limits, the kind you might expect if you
+were living in a simulation trying to
+conserve processing power. But the
+scariest possibility isn't that P equals
+NP or that it doesn't. It's that God or
+the universe or the simulation already
+knows the answer. And the entire purpose
+of our existence is to be the algorithm
+that computes it.
+>> Let me out.
+Let me out. I WANT OUT.
+>> Unfortunately though, after several
+minutes of prompting, I still haven't
+solved the problem. But if you figure it
+out, let me know because I could really
+use that million dollars. Until then,
+the only thing I have actually solved
+recently is my back-end infrastructure.
+Thanks to MongoDB Atlas, the sponsor of
+today's video, everyone's trying to ship
+new AI features as fast as possible
+right now, but their back-end
+infrastructure is usually a mess. You've
+got separate databases for your app data
+and vector embeddings, a search engine
+duct taped onto the side, and a bunch of
+sloppy glue code holding everything
+together. MongoDB Atlas eliminates all
+that complexity by providing a modern
+data platform built for AI applications.
+You can use it to store all your source
+data, vector embeddings, and metadata in
+the same document. then query everything
+in one place. It also supports real-time
+stream processing so your agents can
+react to live events as they happen
+rather than relying on stable batch
+updates. If you're building an AI app
+and want to simplify your architecture
+for good, try out MongoDB Atlas for free
+at the link below. Thanks for watching
+and I will see you in the next one.
