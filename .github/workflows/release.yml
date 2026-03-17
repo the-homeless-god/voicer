@@ -72,9 +72,9 @@ jobs:
           name: Voicer-${{ matrix.name }}
           path: Voicer-${{ matrix.name }}.zip
 
+  # Runs after all 3 builds. Upload step only when triggered by "Publish release" (event release).
   upload-release:
     needs: build
-    if: github.event_name == 'release'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -89,8 +89,10 @@ jobs:
         run: find artifacts -type f
 
       - name: Upload to Release
+        if: github.event_name == 'release'
         uses: softprops/action-gh-release@v2
         with:
+          release_id: ${{ github.event.release.id }}
           files: |
             artifacts/Voicer-macos/Voicer-macos.zip
             artifacts/Voicer-windows/Voicer-windows.zip
